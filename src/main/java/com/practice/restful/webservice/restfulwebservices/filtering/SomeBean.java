@@ -1,9 +1,10 @@
 package com.practice.restful.webservice.restfulwebservices.filtering;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFilter;
 
-@JsonIgnoreProperties(value = {"userName","password"})
+//@JsonIgnoreProperties(value = {"userName","password"})	//for static filtering
+
+@JsonFilter("SomeBeanFilter")
 public class SomeBean {
 	
 	private int id;
