@@ -2,14 +2,20 @@ package com.practice.userProject;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Past;
 
+@Entity
 public class User {
 	
+	@Id
+	@GeneratedValue
 	private Integer id;
 	
-	@Min(value =2, message = "Name should have atleast 2 characters")
+	//@Min(value =2, message = "Name should have atleast 2 characters")
 	private String name;
 	
 	@Past
