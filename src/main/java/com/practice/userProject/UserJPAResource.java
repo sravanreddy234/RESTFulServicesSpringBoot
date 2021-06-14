@@ -1,15 +1,17 @@
 package com.practice.userProject;
 
+//manually added
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.LinkedTransferQueue;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*; //manually added
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +30,9 @@ public class UserJPAResource {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private PostRepository postRepository;
 	
 	@GetMapping(path="/jpa/users")
 	public List<User> retrieveAllUsers(){	
@@ -73,4 +78,30 @@ public class UserJPAResource {
 		userRepository.deleteById(id);
 	}
 	
+	
+	@GetMapping(path="/jpa/users/{id}/posts")
+	public List<Post> retrieveAllUsers(@PathVariable int id){	
+		Optional<User> user = userRepository.findById(id);
+		if(!user.isPresent()) {
+			throw new UserNotFoundException("id-"+id);
+		}
+		
+		return user.get().getPost();
+	}
+	
+	@PostMapping("/jpa/users/{id}/posts")
+	public ResponseEntity<Object> createPost(@PathVariable int id,@RequestBody Post post ) {
+		
+		Optional<User> user = userRepository.findById(id);
+		if(!user.isPresent()) {
+			throw new UserNotFoundException("id-"+id);
+		}
+		
+		User savedUser = user.get();
+		post.setUser(savedUser);		
+		postRepository.save(post);
+		
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(post.getId()).toUri();
+		return ResponseEntity.created(location).build();
+	}
 }
